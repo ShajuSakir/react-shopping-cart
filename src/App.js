@@ -9,16 +9,23 @@ class App extends React.Component{
     super();
     this.state={
       products:data.products,
-      cartItems: [],
+      cartItems: localStorage.getItem("cartItems")?JSON.parse(localStorage.getItem("cartItems")):[],
       size:"",
       sort:""
     };
   }
 
+  createOrder=(order)=>{
+
+  };
+
   removeFromCart=(product)=>{
     const cartItems= this.state.cartItems.slice();
-      this.setState({cartItems:cartItems.filter(item=>(item._id!==product._id)),
+      this.setState({cartItems:cartItems.filter(item=>item._id!==product._id),
     });
+    localStorage.setItem(
+      "cartItems",
+      JSON.stringify(cartItems.filter((item)=>item._id!==product._id)));
   };
 
   addToCart=(product)=>{    
@@ -37,6 +44,8 @@ class App extends React.Component{
       cartItems.push({...product, count:1});
     }
     this.setState({cartItems});
+    //session persistance - save the state to local storage. othewise data will loose when refresh the page
+    localStorage.setItem("cartItems",JSON.stringify(cartItems));
   };
 
   sortProducts=(event)=>{
@@ -86,7 +95,10 @@ class App extends React.Component{
               <Products Products={this.state.products}  addToCart={this.addToCart}></Products>
             </div>
             <div className="sidebar">
-              <Cart cartItems={this.state.cartItems} removeFromCart={this.removeFromCart}>                
+              <Cart 
+                cartItems={this.state.cartItems} 
+                removeFromCart={this.removeFromCart}
+                createOrder={this.createOrder}>                
               </Cart>
             </div>
           </div>
